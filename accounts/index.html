@@ -23,7 +23,7 @@
         </form>
         <table>
             <thead>
-                <tr><th>نوع اللعبة</th><th>اسم الحساب</th><th>الإيميل</th><th>كلمة السر</th></tr>
+                <tr><th>نوع اللعبة</th><th>اسم الحساب</th><th>الإيميل</th><th>كلمة السر</th><th>إجراءات</th></tr>
             </thead>
             <tbody id="accBody"></tbody>
         </table>
@@ -31,16 +31,41 @@
     <footer>
         &copy; 2024 Yousif
     </footer>
+    <script src="../js/auth.js"></script>
     <script>
         const form = document.getElementById('accForm');
         const tbody = document.getElementById('accBody');
         const accounts = JSON.parse(localStorage.getItem('accounts')) || [];
 
+        let editIndex = -1;
+
         function render() {
             tbody.innerHTML = '';
-            accounts.forEach(acc => {
+            accounts.forEach((acc, i) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td>${acc.type}</td><td>${acc.name}</td><td>${acc.email}</td><td>${acc.password}</td>`;
+                const actions = document.createElement('td');
+                actions.className = 'actions';
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'تعديل';
+                editBtn.onclick = () => {
+                    document.getElementById('type').value = acc.type;
+                    document.getElementById('name').value = acc.name;
+                    document.getElementById('email').value = acc.email;
+                    document.getElementById('password').value = acc.password;
+                    editIndex = i;
+                    form.querySelector('button').textContent = 'حفظ';
+                };
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'حذف';
+                delBtn.onclick = () => {
+                    accounts.splice(i,1);
+                    localStorage.setItem('accounts', JSON.stringify(accounts));
+                    render();
+                };
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+                tr.appendChild(actions);
                 tbody.appendChild(tr);
             });
         }
@@ -54,7 +79,13 @@
                 password: document.getElementById('password').value,
                 date: new Date().toISOString()
             };
-            accounts.push(acc);
+            if(editIndex === -1){
+                accounts.push(acc);
+            } else {
+                accounts[editIndex] = acc;
+                editIndex = -1;
+                form.querySelector('button').textContent = 'إضافة';
+            }
             localStorage.setItem('accounts', JSON.stringify(accounts));
             render();
             form.reset();

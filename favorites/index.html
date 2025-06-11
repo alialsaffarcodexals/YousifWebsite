@@ -31,12 +31,18 @@
 
         function render() {
             list.innerHTML = '';
-            sites.forEach((s, i) => {
+            sites.forEach(s => {
                 const li = document.createElement('li');
                 const a = document.createElement('a');
-                a.textContent = s.name;
                 a.href = s.url;
                 a.target = '_blank';
+                const img = document.createElement('img');
+                img.alt = s.name;
+                img.src = `https://www.google.com/s2/favicons?sz=64&domain_url=${s.url}`;
+                const span = document.createElement('span');
+                span.textContent = s.name;
+                a.appendChild(img);
+                a.appendChild(span);
                 li.appendChild(a);
                 list.appendChild(li);
             });

@@ -13,12 +13,51 @@
         <a href="../index.html">الرئيسية</a>
     </nav>
     <main>
-        <h2>مجموعة من صور يوسف</h2>
-        <img src="https://via.placeholder.com/300" alt="صورة يوسف">
-        <img src="https://via.placeholder.com/300" alt="صورة يوسف">
+        <h2>أضف صورة</h2>
+        <form id="imgForm">
+            <input type="text" id="imgName" placeholder="اسم الصورة" required>
+            <input type="text" id="imgPath" placeholder="المسار" required>
+            <button type="submit">إضافة</button>
+        </form>
+        <div id="imgList"></div>
     </main>
     <footer>
         &copy; 2024 Yousif
     </footer>
+    <script>
+        const form = document.getElementById('imgForm');
+        const list = document.getElementById('imgList');
+        const images = JSON.parse(localStorage.getItem('images')) || [];
+
+        function render() {
+            list.innerHTML = '';
+            images.forEach(img => {
+                const div = document.createElement('div');
+                const p = document.createElement('p');
+                p.textContent = `${img.name} - ${new Date(img.date).toLocaleString()}`;
+                const image = document.createElement('img');
+                image.src = img.path;
+                image.alt = img.name;
+                div.appendChild(p);
+                div.appendChild(image);
+                list.appendChild(div);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const img = {
+                name: document.getElementById('imgName').value,
+                path: document.getElementById('imgPath').value,
+                date: new Date().toISOString()
+            };
+            images.push(img);
+            localStorage.setItem('images', JSON.stringify(images));
+            render();
+            form.reset();
+        });
+
+        render();
+    </script>
 </body>
 </html>

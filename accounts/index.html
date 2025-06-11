@@ -13,16 +13,54 @@
         <a href="../index.html">الرئيسية</a>
     </nav>
     <main>
-        <h2>حساباتي في الألعاب</h2>
-        <table border="1">
-            <tr><th>اللعبة</th><th>اسم الحساب</th></tr>
-            <tr><td>فورتنايت</td><td>YousifFN</td></tr>
-            <tr><td>قراند</td><td>YousifGTA</td></tr>
-            <tr><td>مارفل</td><td>YousifMarvel</td></tr>
+        <h2>أضف حساب جديد</h2>
+        <form id="accForm">
+            <input type="text" id="type" placeholder="نوع اللعبة" required>
+            <input type="text" id="name" placeholder="اسم الحساب" required>
+            <input type="email" id="email" placeholder="الإيميل" required>
+            <input type="text" id="password" placeholder="كلمة السر" required>
+            <button type="submit">إضافة</button>
+        </form>
+        <table>
+            <thead>
+                <tr><th>نوع اللعبة</th><th>اسم الحساب</th><th>الإيميل</th><th>كلمة السر</th></tr>
+            </thead>
+            <tbody id="accBody"></tbody>
         </table>
     </main>
     <footer>
         &copy; 2024 Yousif
     </footer>
+    <script>
+        const form = document.getElementById('accForm');
+        const tbody = document.getElementById('accBody');
+        const accounts = JSON.parse(localStorage.getItem('accounts')) || [];
+
+        function render() {
+            tbody.innerHTML = '';
+            accounts.forEach(acc => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${acc.type}</td><td>${acc.name}</td><td>${acc.email}</td><td>${acc.password}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const acc = {
+                type: document.getElementById('type').value,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                date: new Date().toISOString()
+            };
+            accounts.push(acc);
+            localStorage.setItem('accounts', JSON.stringify(accounts));
+            render();
+            form.reset();
+        });
+
+        render();
+    </script>
 </body>
 </html>

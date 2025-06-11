@@ -8,6 +8,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.1rem;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
@@ -23,6 +24,9 @@ header {
     box-shadow: 0 2px 4px rgba(0,0,0,0.6);
 }
 
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.6rem; }
+
 nav {
     background-color: var(--primary-color);
     display: flex;
@@ -36,6 +40,7 @@ nav a {
     color: var(--text-color);
     text-decoration: none;
     padding: 10px 15px;
+    font-size: 1.1rem;
     transition: background-color 0.3s, transform 0.3s;
     border-radius: 4px;
 }
@@ -95,6 +100,7 @@ th, td {
     padding: 8px;
     border: 1px solid var(--hover-bg);
     text-align: center;
+    font-size: 1.1rem;
 }
 
 ul {
@@ -103,6 +109,23 @@ ul {
 }
 
 li { margin: 5px 0; }
+
+#favList li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+}
+
+#favList img {
+    width: 48px;
+    height: 48px;
+    transition: transform 0.3s;
+}
+
+#favList a:hover img {
+    transform: scale(1.2);
+}
 
 footer {
     background-color: var(--primary-color);

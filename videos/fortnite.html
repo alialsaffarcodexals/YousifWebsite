@@ -13,12 +13,53 @@
         <a href="../index.html">الرئيسية</a>
     </nav>
     <main>
-        <h2>مقاطع من لعبة فورتنايت</h2>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/oHg5SJYRHA0" frameborder="0" allowfullscreen></iframe>
+        <h2>أضف مقطع</h2>
+        <form id="videoForm">
+            <input type="text" id="videoName" placeholder="اسم المقطع" required>
+            <input type="text" id="videoPath" placeholder="المسار" required>
+            <button type="submit">إضافة</button>
+        </form>
+        <div id="videoList"></div>
     </main>
     <footer>
         &copy; 2024 Yousif
     </footer>
+    <script>
+        const key = 'fortniteVideos';
+        const form = document.getElementById('videoForm');
+        const list = document.getElementById('videoList');
+        const videos = JSON.parse(localStorage.getItem(key)) || [];
+
+        function render() {
+            list.innerHTML = '';
+            videos.forEach(v => {
+                const div = document.createElement('div');
+                const p = document.createElement('p');
+                p.textContent = `${v.name} - ${new Date(v.date).toLocaleString()}`;
+                const vid = document.createElement('video');
+                vid.src = v.path;
+                vid.controls = true;
+                vid.width = 560;
+                div.appendChild(p);
+                div.appendChild(vid);
+                list.appendChild(div);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('videoName').value,
+                path: document.getElementById('videoPath').value,
+                date: new Date().toISOString()
+            };
+            videos.push(data);
+            localStorage.setItem(key, JSON.stringify(videos));
+            render();
+            form.reset();
+        });
+
+        render();
+    </script>
 </body>
 </html>

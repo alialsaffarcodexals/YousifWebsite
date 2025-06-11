@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>تطبيقات يوسف</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>تطبيقات والعاب يوسف</h1>
+    </header>
+    <nav>
+        <a href="../index.html">الرئيسية</a>
+    </nav>
+    <main>
+        <h2>أضف تطبيق</h2>
+        <form id="appForm">
+            <input type="text" id="appName" placeholder="اسم التطبيق" required>
+            <input type="text" id="appPath" placeholder="مسار exe" required>
+            <input type="text" id="appIcon" placeholder="مسار الأيقونة (اختياري)">
+            <button type="submit">إضافة</button>
+        </form>
+        <div id="appGrid" class="app-grid"></div>
+    </main>
+    <footer>
+        &copy; 2024 Yousif
+    </footer>
+    <script src="../js/auth.js"></script>
+    <script>
+        const form = document.getElementById('appForm');
+        const grid = document.getElementById('appGrid');
+        const apps = JSON.parse(localStorage.getItem('apps')) || [];
+        let editIndex = -1;
+
+        function render(){
+            grid.innerHTML = '';
+            apps.forEach((app,i)=>{
+                const item = document.createElement('div');
+                item.className = 'app-item';
+                const link = document.createElement('a');
+                link.href = app.path;
+                link.target = '_blank';
+                const img = document.createElement('img');
+                img.src = app.icon || 'https://via.placeholder.com/64?text=app';
+                img.alt = app.name;
+                const span = document.createElement('span');
+                span.textContent = app.name;
+                link.appendChild(img);
+                link.appendChild(span);
+                const actions = document.createElement('div');
+                actions.className = 'actions';
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'تعديل';
+                editBtn.onclick = () => {
+                    document.getElementById('appName').value = app.name;
+                    document.getElementById('appPath').value = app.path;
+                    document.getElementById('appIcon').value = app.icon;
+                    editIndex = i;
+                    form.querySelector('button').textContent = 'حفظ';
+                };
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'حذف';
+                delBtn.onclick = () => {
+                    apps.splice(i,1);
+                    localStorage.setItem('apps', JSON.stringify(apps));
+                    render();
+                };
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+                item.appendChild(link);
+                item.appendChild(actions);
+                grid.appendChild(item);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('appName').value,
+                path: document.getElementById('appPath').value,
+                icon: document.getElementById('appIcon').value,
+                date: new Date().toISOString()
+            };
+            if(editIndex === -1){
+                apps.push(data);
+            } else {
+                apps[editIndex] = data;
+                editIndex = -1;
+                form.querySelector('button').textContent = 'إضافة';
+            }
+            localStorage.setItem('apps', JSON.stringify(apps));
+            render();
+            form.reset();
+        });
+
+        render();
+    </script>
+</body>
+</html>

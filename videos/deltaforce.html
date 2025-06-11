@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>مقاطع دلتا فورس</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>مقاطع دلتا فورس</h1>
+    </header>
+    <nav>
+        <a href="../index.html">الرئيسية</a>
+    </nav>
+    <main>
+        <h2>أضف مقطع</h2>
+        <form id="videoForm">
+            <input type="text" id="videoName" placeholder="اسم المقطع" required>
+            <input type="text" id="videoPath" placeholder="المسار" required>
+            <button type="submit">إضافة</button>
+        </form>
+        <div id="videoList"></div>
+    </main>
+    <footer>
+        &copy; 2024 Yousif
+    </footer>
+    <script src="../js/auth.js"></script>
+    <script>
+        const key = 'deltaforceVideos';
+        const form = document.getElementById('videoForm');
+        const list = document.getElementById('videoList');
+        const videos = JSON.parse(localStorage.getItem(key)) || [];
+        let editIndex = -1;
+
+        function render() {
+            list.innerHTML = '';
+            videos.forEach((v,i) => {
+                const div = document.createElement('div');
+                const p = document.createElement('p');
+                p.textContent = `${v.name} - ${new Date(v.date).toLocaleString()}`;
+                const vid = document.createElement('video');
+                vid.src = v.path;
+                vid.controls = true;
+                vid.width = 560;
+                const actions = document.createElement('div');
+                actions.className = 'actions';
+                const edit = document.createElement('button');
+                edit.textContent = 'تعديل';
+                edit.onclick = () => {
+                    document.getElementById('videoName').value = v.name;
+                    document.getElementById('videoPath').value = v.path;
+                    editIndex = i;
+                    form.querySelector('button').textContent = 'حفظ';
+                };
+                const del = document.createElement('button');
+                del.textContent = 'حذف';
+                del.onclick = () => {
+                    videos.splice(i,1);
+                    localStorage.setItem(key, JSON.stringify(videos));
+                    render();
+                };
+                actions.appendChild(edit);
+                actions.appendChild(del);
+                div.appendChild(p);
+                div.appendChild(vid);
+                div.appendChild(actions);
+                list.appendChild(div);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('videoName').value,
+                path: document.getElementById('videoPath').value,
+                date: new Date().toISOString()
+            };
+            if(editIndex === -1){
+                videos.push(data);
+            } else {
+                videos[editIndex] = data;
+                editIndex = -1;
+                form.querySelector('button').textContent = 'إضافة';
+            }
+            localStorage.setItem(key, JSON.stringify(videos));
+            render();
+            form.reset();
+        });
+
+        render();
+    </script>
+</body>
+</html>

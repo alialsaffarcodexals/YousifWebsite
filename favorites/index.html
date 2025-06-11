@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>المواقع المفضلة</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>المواقع المفضلة</h1>
+    </header>
+    <nav>
+        <a href="../index.html">الرئيسية</a>
+    </nav>
+    <main>
+        <h2>أضف موقعك المفضل</h2>
+        <form id="favForm">
+            <input type="text" id="siteName" placeholder="اسم الموقع" required>
+            <input type="url" id="siteUrl" placeholder="الرابط" required>
+            <button type="submit">إضافة</button>
+        </form>
+        <ul id="favList"></ul>
+    </main>
+    <footer>
+        &copy; 2024 Yousif
+    </footer>
+    <script src="../js/auth.js"></script>
+    <script>
+        const form = document.getElementById('favForm');
+        const list = document.getElementById('favList');
+        const sites = JSON.parse(localStorage.getItem('sites')) || [];
+
+        let editIndex = -1;
+
+        function render() {
+            list.innerHTML = '';
+            sites.forEach((s,i) => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = s.url;
+                a.target = '_blank';
+                const img = document.createElement('img');
+                img.alt = s.name;
+                img.src = `https://www.google.com/s2/favicons?sz=64&domain_url=${s.url}`;
+                const span = document.createElement('span');
+                span.textContent = s.name;
+                a.appendChild(img);
+                a.appendChild(span);
+                const actions = document.createElement('div');
+                actions.className = 'actions';
+                const edit = document.createElement('button');
+                edit.textContent = 'تعديل';
+                edit.onclick = () => {
+                    document.getElementById('siteName').value = s.name;
+                    document.getElementById('siteUrl').value = s.url;
+                    editIndex = i;
+                    form.querySelector('button').textContent = 'حفظ';
+                };
+                const del = document.createElement('button');
+                del.textContent = 'حذف';
+                del.onclick = () => {
+                    sites.splice(i,1);
+                    localStorage.setItem('sites', JSON.stringify(sites));
+                    render();
+                };
+                actions.appendChild(edit);
+                actions.appendChild(del);
+                li.appendChild(a);
+                li.appendChild(actions);
+                list.appendChild(li);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const name = document.getElementById('siteName').value;
+            const url = document.getElementById('siteUrl').value;
+            if(editIndex === -1){
+                sites.push({ name, url });
+            } else {
+                sites[editIndex] = { name, url };
+                editIndex = -1;
+                form.querySelector('button').textContent = 'إضافة';
+            }
+            localStorage.setItem('sites', JSON.stringify(sites));
+            render();
+            form.reset();
+        });
+
+        render();
+    </script>
+</body>
+</html>

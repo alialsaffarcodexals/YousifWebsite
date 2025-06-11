@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>صور يوسف</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>صور يوسف</h1>
+    </header>
+    <nav>
+        <a href="../index.html">الرئيسية</a>
+    </nav>
+    <main>
+        <h2>أضف صورة</h2>
+        <form id="imgForm">
+            <input type="text" id="imgName" placeholder="اسم الصورة" required>
+            <input type="text" id="imgPath" placeholder="المسار" required>
+            <button type="submit">إضافة</button>
+        </form>
+        <div id="imgList"></div>
+    </main>
+    <footer>
+        &copy; 2024 Yousif
+    </footer>
+    <script src="../js/auth.js"></script>
+    <script>
+        const form = document.getElementById('imgForm');
+        const list = document.getElementById('imgList');
+        const images = JSON.parse(localStorage.getItem('images')) || [];
+        let editIndex = -1;
+
+        function render() {
+            list.innerHTML = '';
+            images.forEach((img,i) => {
+                const div = document.createElement('div');
+                const p = document.createElement('p');
+                p.textContent = `${img.name} - ${new Date(img.date).toLocaleString()}`;
+                const image = document.createElement('img');
+                image.src = img.path;
+                image.alt = img.name;
+                const actions = document.createElement('div');
+                actions.className = 'actions';
+                const edit = document.createElement('button');
+                edit.textContent = 'تعديل';
+                edit.onclick = () => {
+                    document.getElementById('imgName').value = img.name;
+                    document.getElementById('imgPath').value = img.path;
+                    editIndex = i;
+                    form.querySelector('button').textContent = 'حفظ';
+                };
+                const del = document.createElement('button');
+                del.textContent = 'حذف';
+                del.onclick = () => {
+                    images.splice(i,1);
+                    localStorage.setItem('images', JSON.stringify(images));
+                    render();
+                };
+                actions.appendChild(edit);
+                actions.appendChild(del);
+                div.appendChild(p);
+                div.appendChild(image);
+                div.appendChild(actions);
+                list.appendChild(div);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const img = {
+                name: document.getElementById('imgName').value,
+                path: document.getElementById('imgPath').value,
+                date: new Date().toISOString()
+            };
+            if(editIndex === -1){
+                images.push(img);
+            } else {
+                images[editIndex] = img;
+                editIndex = -1;
+                form.querySelector('button').textContent = 'إضافة';
+            }
+            localStorage.setItem('images', JSON.stringify(images));
+            render();
+            form.reset();
+        });
+
+        render();
+    </script>
+</body>
+</html>
